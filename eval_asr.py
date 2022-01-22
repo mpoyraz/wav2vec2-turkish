@@ -25,6 +25,8 @@ def main():
                         help="The configuration name of the dataset to use (via the datasets library)")
     parser.add_argument("--eval_split_name", type=str, default="test",
                         help="The name of the evaluation data set split to use (via the datasets library)")
+    parser.add_argument("--use_auth_token", action='store_true',
+                        help="Use authentication for loading the dataset (via the datasets library)")
     parser.add_argument("--audio_column_name", type=str, default="audio",
                         help="The name of the dataset column containing the audio data")
     parser.add_argument("--text_column_name", type=str, default="sentence",
@@ -53,7 +55,8 @@ def main():
     model = model.to(device)
     
     # Load evaluation dataset
-    eval_dataset = load_dataset(args.dataset_name, args.dataset_config_name, split=args.eval_split_name)
+    eval_dataset = load_dataset(args.dataset_name, args.dataset_config_name,
+                                split=args.eval_split_name, use_auth_token=args.use_auth_token)
     logging.info("Dataset '{}' - split '{}' has {} records".format(
         args.dataset_name, args.eval_split_name, len(eval_dataset)))
     
