@@ -1,22 +1,30 @@
 import re
+from unicode_tr import unicode_tr
 
-def remove_special_characters(text, chars_to_remove_regex = '[\,\?\.\!\-\;\:\"\“\%\‘\”\�\'\(\)…]'):
-    text = re.sub(chars_to_remove_regex, '', text)
-    return text
+chars_to_remove_regex = '[,?.!\-\;\:"“%”�—…–()]'
+apostrophes = "[’‘`´ʹʻʼʽʿˈ]"
 
-def unify_characters(text):
-    # Hatted characters
-    text = re.sub('[â]', 'a', text)
-    text = re.sub('[î]', 'i', text)
-    text = re.sub('[ô]', 'o', text)
-    text = re.sub('[û]', 'u', text)
-    # Alternate characters
-    text = re.sub('[é]', 'e', text)
-    text = re.sub('[ë]', 'e', text)
-    text = re.sub('[i̇]', 'i', text)
-    # Apostrophe
-    text = re.sub('[’]', "'", text)
-    return text
+def normalize_text(text):
 
-def check_invalid_char(sentence, vocab):
-    return any([ch not in vocab for ch in re.sub(r"\s+", "", sentence)])
+    # Lower the text using 'unicode_tr'
+    # Regular lower() does not work well for Turkish Language
+    text_norm = unicode_tr(text).lower()
+    # Unify apostrophes
+    text_norm = re.sub(apostrophes, "'", text_norm)
+    # Remove pre-defined chars
+    text_norm = re.sub(chars_to_remove_regex, "", text_norm)
+    # Remove single quotes
+    text_norm = text_norm.replace(" '", " ")
+    text_norm = text_norm.replace("' ", " ")
+    # Handle hatted characters
+    text_norm = re.sub('[â]', 'a', text_norm)
+    text_norm = re.sub('[î]', 'i', text_norm)
+    text_norm = re.sub('[ô]', 'o', text_norm)
+    text_norm = re.sub('[û]', 'u', text_norm)
+    # Handle alternate characters
+    text_norm = re.sub('[é]', 'e', text_norm)
+    text_norm = re.sub('[ë]', 'e', text_norm)
+    # Remove multiple spaces
+    text_norm = re.sub(r"\s+", " ", text_norm)
+
+    return text_norm
