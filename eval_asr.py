@@ -93,12 +93,13 @@ def main():
         # Predict
         with torch.no_grad():
             logits = model(**inputs).logits
-            # No LM case
-            # pred_ids = torch.argmax(logits, dim=-1)
-            # batch["pred_strings"] = processor.batch_decode(pred_ids)
-            # With LM
-            decode_results = processor.batch_decode(logits.cpu().numpy())
-            batch["pred_strings"] = decode_results.text
+            # Decode with LM
+            if hasattr(processor, 'decoder'):
+                decode_results = processor.batch_decode(logits.cpu().numpy())
+                batch["pred_strings"] = decode_results.text
+            else: # No LM
+                pred_ids = torch.argmax(logits, dim=-1)
+                batch["pred_strings"] = processor.batch_decode(pred_ids)
             
         return batch
     
