@@ -1,4 +1,3 @@
-import re
 import sys
 import logging
 import argparse
@@ -9,7 +8,7 @@ from transformers import (
     AutoProcessor,
 )
 from datasets import DatasetDict, load_dataset, load_metric, set_caching_enabled
-from utils import remove_special_characters, unify_characters
+from utils import normalize_text
 
 set_caching_enabled(False)
 logger = logging.getLogger(__name__)
@@ -44,30 +43,27 @@ def main():
         handlers=[logging.StreamHandler(sys.stdout)],
         level=logging.INFO
     )
-    
+
     # Torch device to run evaluation
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info("Using {} for evaluation".format(device))
-    
+
     # Wav2vec2 processor and model
     processor = AutoProcessor.from_pretrained(args.model_name_or_path)
     model = AutoModelForCTC.from_pretrained(args.model_name_or_path)
     model = model.to(device)
-    
+
     # Load evaluation dataset
     eval_dataset = load_dataset(args.dataset_name, args.dataset_config_name,
                                 split=args.eval_split_name, use_auth_token=args.use_auth_token)
     logging.info("Dataset '{}' - split '{}' has {} records".format(
         args.dataset_name, args.eval_split_name, len(eval_dataset)))
-    
+
     # Preprocess text and resample audio
     def preprocess(sample):
-        # Lowercase and clean text
-        text = sample[args.text_column_name].lower()
-        text = remove_special_characters(text)
-        text = unify_characters(text)
-        text = re.sub('\s+', ' ', text)
-        sample['text'] = text
+        # Normalize text
+        text = sample[args.text_column_name]
+        sample['text'] = normalize_text(text)
         # Resample audio array
         resampler = torchaudio.transforms.Resample(
             sample[args.audio_column_name]["sampling_rate"],
@@ -100,18 +96,17 @@ def main():
             else: # No LM
                 pred_ids = torch.argmax(logits, dim=-1)
                 batch["pred_strings"] = processor.batch_decode(pred_ids)
-            
         return batch
-    
+
     eval_dataset = eval_dataset.map(
         predict, batched=True, batch_size=args.batch_size
     )
-    
+
     # Load metrics and calculate on eval dataset
     wer, cer = load_metric("wer"), load_metric("cer")
     wer_score = wer.compute(predictions=eval_dataset["pred_strings"], references=eval_dataset["text"])
     cer_score = cer.compute(predictions=eval_dataset["pred_strings"], references=eval_dataset["text"])
     logging.info("WER: {:.2f} % , CER: {:.2f} %".format(100*wer_score, 100*cer_score))    
-    
+
 if __name__ == "__main__":
     main()
