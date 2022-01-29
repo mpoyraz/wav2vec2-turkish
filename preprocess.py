@@ -52,9 +52,9 @@ def main():
 
     # Parse arguments
     parser = argparse.ArgumentParser(description="Train Wav2vec ASR with CTC")
-    parser.add_argument("cv_path", type=str, help="Path for CommonVoice TR dataset")
-    parser.add_argument("media_speech_path", type=str, help="Path for MediaSPeech TR dataset")
-    parser.add_argument("vocab", type=str, help="ASR vocabulary of tokens")
+    parser.add_argument("--vocab", type=str, required=True, help="ASR vocabulary of tokens")
+    parser.add_argument("--cv_path", type=str, required=True, help="Path for CommonVoice TR dataset")
+    parser.add_argument("--media_speech_path", type=str, help="Path for MediaSpeech TR dataset")
     parser.add_argument("--output", type=str, help="Output directory")
     args = parser.parse_args()
 
@@ -66,10 +66,12 @@ def main():
     df_cv_train, df_cv_dev, df_cv_test = load_common_voice_corpus(args.cv_path)
 
     # Load MediaSpeech dataset
-    df_ms = load_media_speech_corpus(args.media_speech_path)
+    if args.media_speech_path:
+        df_ms = load_media_speech_corpus(args.media_speech_path)
 
     # Clean and filter datasets
-    df_train = filter_dataset(pd.concat([df_cv_train, df_ms], ignore_index=True), vocab_dict)
+    df_train = filter_dataset(pd.concat([df_cv_train, df_ms], ignore_index=True)
+                              if args.media_speech_path else df_cv_train, vocab_dict)
     df_dev = filter_dataset(df_cv_dev, vocab_dict)
     df_test = filter_dataset(df_cv_test, vocab_dict)
 
