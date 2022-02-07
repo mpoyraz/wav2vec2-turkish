@@ -3,8 +3,9 @@ Turkish Automated Speech Recognition (ASR) using Facebook's Wav2vec 2.0 models
 
 ## Fine-tuned Models
 The following Wav2vec 2.0 models were finetuned during Huggingface's [Robust Speech Challenge](https://github.com/huggingface/transformers/tree/master/examples/research_projects/robust-speech-event) event: 
-1. [mpoyraz/wav2vec2-xls-r-300m-cv7-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv7-turkish) achives 8.62 % WER on Common Voice 7 TR test split
-2. [mpoyraz/wav2vec2-xls-r-300m-cv8-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv8-turkish) achives 10.61 % WER on Common Voice 8 TR test split
+1. [mpoyraz/wav2vec2-xls-r-300m-cv6-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv6-turkish) achives 8.83 % WER on Common Voice 6.1 TR test split
+2. [mpoyraz/wav2vec2-xls-r-300m-cv7-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv7-turkish) achives 8.62 % WER on Common Voice 7 TR test split
+3. [mpoyraz/wav2vec2-xls-r-300m-cv8-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv8-turkish) achives 10.61 % WER on Common Voice 8 TR test split
 
 ## Datasets
 The following open source speech corpora is available for Turkish:
@@ -72,8 +73,9 @@ python train_asr.py \
 ```
 ## Evaluation
 The following finetuned models are available on Huggingface model hub and has an evaluation script `eval.py` with appropiate text normalization. The commands for running evaluations are also available on the model cards.
-1. [mpoyraz/wav2vec2-xls-r-300m-cv7-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv7-turkish) achives 8.62 % WER on Common Voice 7 TR test split
-2. [mpoyraz/wav2vec2-xls-r-300m-cv8-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv8-turkish) achives 10.61 % WER on Common Voice 8 TR test split
+1. [mpoyraz/wav2vec2-xls-r-300m-cv6-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv6-turkish) achives 8.83 % WER on Common Voice 6.1 TR test split
+2. [mpoyraz/wav2vec2-xls-r-300m-cv7-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv7-turkish) achives 8.62 % WER on Common Voice 7 TR test split
+3. [mpoyraz/wav2vec2-xls-r-300m-cv8-turkish](https://huggingface.co/mpoyraz/wav2vec2-xls-r-300m-cv8-turkish) achives 10.61 % WER on Common Voice 8 TR test split
 
 ## Language Model
 For CTC beam search decoding with shallow LM fusion, n-gram language model is trained on a Turkish Wikipedia articles using KenLM and [ngram-lm-wiki](https://github.com/mpoyraz/ngram-lm-wiki) repo was used to generate arpa LM and convert it into binary format.
